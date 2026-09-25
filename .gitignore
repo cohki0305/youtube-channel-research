@@ -1,0 +1,6 @@
+.env
+data/
+node_modules/
+.DS_Store
+skills/youtube-channel-research/archive/
+.claude/
