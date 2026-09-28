@@ -1,22 +1,22 @@
 #!/usr/bin/env node
 // チャンネルの全動画データを YouTube Data API v3 で取得する
-// 使い方: node scripts/fetch_channel.mjs <@handle | チャンネルURL | UC...>
+// 使い方: node scripts/fetch_channel.ts <@handle | チャンネルURL | UC...>
 // 出力: data/<slug>/channel.json, videos.json, videos.csv
 // クォータ: 動画N本で おおよそ 1 + ceil(N/50)*2 ユニット（1日10,000ユニット）
 import fs from 'node:fs';
 import path from 'node:path';
-import { ROOT, requireApiKey, yt, quotaUsed, parseChannelArg, isoDurationToSec, toCsv, slug } from './lib.mjs';
+import { ROOT, requireApiKey, yt, quotaUsed, parseChannelArg, isoDurationToSec, toCsv, slug } from './lib.ts';
 
 const arg = process.argv[2];
 const target = parseChannelArg(arg);
 if (!target) {
-  console.error('使い方: node scripts/fetch_channel.mjs <@handle | チャンネルURL | UC...>');
+  console.error('使い方: node scripts/fetch_channel.ts <@handle | チャンネルURL | UC...>');
   process.exit(1);
 }
 const key = requireApiKey();
 
 // 1. チャンネル情報
-const chParams = { part: 'snippet,statistics,contentDetails,brandingSettings', ...(target.id ? { id: target.id } : { forHandle: target.handle }) };
+const chParams = { part: 'snippet,statistics,contentDetails,brandingSettings', ...(target.id ? { id: target.id } : { forHandle: target.handle! }) };
 const ch = (await yt(key, 'channels', chParams)).items?.[0];
 if (!ch) {
   console.error('チャンネルが見つかりません: ' + arg);

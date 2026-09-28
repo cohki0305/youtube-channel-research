@@ -1,7 +1,7 @@
-// 例：田端大学 投資学部（@tabbata）で使った分類ルール。data/<slug>/why/classify.mjs にコピーし、ルールをチャンネルに合わせて書き換えて使う
+// 例：田端大学 投資学部（@tabbata）で使った分類ルール。data/<slug>/why/classify.ts にコピーし、ルールをチャンネルに合わせて書き換えて使う
 // @tabbata 直近12か月の通常動画を、タイトルの語で機械的に分類する（上から順に最初に当たった種類）
 import fs from 'node:fs';
-import { median } from '../../../scripts/lib.mjs';
+import { median } from '../../../scripts/lib.ts';
 const v = JSON.parse(fs.readFileSync(new URL('../videos.json', import.meta.url)));
 const since = '2025-09-24';
 const rules = [
