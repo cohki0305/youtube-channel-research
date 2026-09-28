@@ -22,9 +22,24 @@ export interface PainVideo {
   transcriptPath?: string | null; // 全文（上位の数本だけ保存）
 }
 
-// 全文を読む動画の順位。ショート（minMin 分未満）は除いて、上から n 本
-export function pickFullRead(rows: { rank: number; durationMin: number }[], n: number, minMin = 3): Set<number> {
-  return new Set(rows.filter((r) => r.durationMin >= minMin).slice(0, n).map((r) => r.rank));
+// 全文を読む動画の順位。ショート（minMin 分未満）は除く。よく見られている答えを読み落とさないよう、
+// 再生の多い2本を必ず含め、残りは検索順位の順に埋める。偏らないよう、同じチャンネルは perChannel 本まで
+export function pickFullRead(
+  rows: { rank: number; durationMin: number; views?: number; channel?: string }[],
+  n: number, minMin = 3, perChannel = 2,
+): Set<number> {
+  const long = rows.filter((r) => r.durationMin >= minMin);
+  const picked: typeof long = [];
+  const count = new Map<string, number>();
+  const add = (r: (typeof long)[number]) => {
+    const c = r.channel ?? String(r.rank);
+    if (picked.length >= n || picked.includes(r) || (count.get(c) ?? 0) >= perChannel) return;
+    picked.push(r);
+    count.set(c, (count.get(c) ?? 0) + 1);
+  };
+  [...long].sort((a, b) => (b.views ?? 0) - (a.views ?? 0)).slice(0, Math.min(2, n)).forEach(add);
+  long.forEach(add);
+  return new Set(picked.map((r) => r.rank));
 }
 
 // 文字起こしの全文を、every 秒ごとに時刻を入れたテキストにする（Claude が全文を読むため）

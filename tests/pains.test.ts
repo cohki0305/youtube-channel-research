@@ -79,9 +79,16 @@ test('renderPainDigest: 候補の表では、動画を番号ではなくタイ�
   assert.match(sec, /\| 1 \| 実例が欲しい \| \[動画2\]\(https:\/\/www\.youtube\.com\/watch\?v=v2\) \|/);
 });
 
-test('pickFullRead: 全文を読む動画は、ショート（3分未満）を除いて上から n 本', async () => {
+test('pickFullRead: ショートを除き、再生の多い2本を必ず含め、残りは順位順。同じチャンネルは2本まで', async () => {
   const { pickFullRead } = await import('../scripts/research/pains.ts');
-  const rows = [{ rank: 1, durationMin: 0 }, { rank: 2, durationMin: 20 }, { rank: 3, durationMin: 1 }, { rank: 4, durationMin: 15 }, { rank: 5, durationMin: 3 }];
-  assert.deepEqual([...pickFullRead(rows, 2)], [2, 4]);
-  assert.deepEqual([...pickFullRead(rows, 5)], [2, 4, 5]);
+  const r = (rank: number, durationMin: number, views: number, channel: string) => ({ rank, durationMin, views, channel });
+  const rows = [
+    r(1, 0, 9_000_000, 'S'),     // ショート（除く）
+    r(2, 12, 5_000, 'A'), r(3, 10, 6_000, 'A'), r(4, 8, 7_000, 'A'),  // A は2本まで
+    r(5, 15, 130_000, 'B'),       // 再生が多い
+    r(6, 20, 110_000, 'C'),       // 再生が多い
+    r(7, 9, 1_000, 'D'),
+  ];
+  assert.deepEqual([...pickFullRead(rows, 5)].sort((a, b) => a - b), [2, 3, 5, 6, 7]);
+  assert.deepEqual([...pickFullRead(rows, 2)].sort((a, b) => a - b), [5, 6]);
 });
