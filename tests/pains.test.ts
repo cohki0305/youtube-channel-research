@@ -62,3 +62,13 @@ test('renderPainDigest: 答えの一覧（チャプター）と、不満・要�
   assert.match(sec, /実例が欲しい/);
   assert.doesNotMatch(sec, /わかりやすかった/);
 });
+
+test('formatTranscript: 全文を、一定の間隔で時刻を入れた読みやすいテキストにする', async () => {
+  const { formatTranscript } = await import('../scripts/research/pains.ts');
+  const segs = [
+    { start: 0, dur: 5, text: 'こんにちは' }, { start: 5, dur: 5, text: '今日は' },
+    { start: 31, dur: 5, text: '本題です' }, { start: 95, dur: 5, text: 'まとめ' },
+  ];
+  assert.equal(formatTranscript(segs, 30), '[0:00] こんにちは 今日は\n[0:31] 本題です\n[1:35] まとめ\n');
+  assert.equal(formatTranscript([], 30), '');
+});

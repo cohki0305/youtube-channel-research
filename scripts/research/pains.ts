@@ -2,7 +2,7 @@
 // 悩みを型に分けるのは Claude（スキルのパートC・C5）。ここでは読みやすく並べるだけ
 import { fmt } from '../lib.ts';
 import { decodeEntities, fmtSec } from '../own/transcript.ts';
-import type { Chapter } from '../own/types.ts';
+import type { Chapter, Segment } from '../own/types.ts';
 
 export interface PainComment { text: string; likes: number; }
 export interface PainVideo {
@@ -19,6 +19,20 @@ export interface PainVideo {
   comments: PainComment[];
   commentsStatus: 'ok' | 'disabled' | 'error';
   opening: string | null; // 冒頭の発言（文字起こし）
+  transcriptPath?: string | null; // 全文（上位の数本だけ保存）
+}
+
+// 文字起こしの全文を、every 秒ごとに時刻を入れたテキストにする（Claude が全文を読むため）
+export function formatTranscript(segs: Segment[], every = 30): string {
+  const out: string[] = [];
+  let blockStart = -Infinity;
+  for (const s of segs) {
+    if (s.start >= blockStart + every) {
+      blockStart = s.start;
+      out.push(`[${fmtSec(s.start)}] ${s.text}`);
+    } else out[out.length - 1] += ' ' + s.text;
+  }
+  return out.length ? out.join('\n') + '\n' : '';
 }
 
 // コメントの HTML の記号・タグ・改行を取り除く
@@ -68,6 +82,7 @@ export function renderPainDigest(query: string, videos: PainVideo[], fetchedAt =
     p('### 冒頭の発言');
     p();
     p(v.opening ? `> ${v.opening}` : '（文字起こしなし）');
+    if (v.transcriptPath) { p(); p(`全文: \`${v.transcriptPath}\`（冒頭だけで判断せず、全文を読む）`); }
     p();
     p('### コメント（関連度順）');
     p();
