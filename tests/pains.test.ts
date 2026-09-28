@@ -72,3 +72,9 @@ test('formatTranscript: 全文を、一定の間隔で時刻を入れた読み�
   assert.equal(formatTranscript(segs, 30), '[0:00] こんにちは 今日は\n[0:31] 本題です\n[1:35] まとめ\n');
   assert.equal(formatTranscript([], 30), '');
 });
+
+test('renderPainDigest: 候補の表では、動画を番号ではなくタイトル（リンク）で示す', () => {
+  const md = renderPainDigest('copilot', [video(2, { comments: [{ text: '実例が欲しい', likes: 1 }] })]);
+  const sec = md.slice(md.indexOf('## 不満・物足りなさ・要望の候補'));
+  assert.match(sec, /\| 1 \| 実例が欲しい \| \[動画2\]\(https:\/\/www\.youtube\.com\/watch\?v=v2\) \|/);
+});

@@ -93,7 +93,7 @@ export function renderPainDigest(query: string, videos: PainVideo[], fetchedAt =
     p();
   }
   const cand = videos
-    .flatMap((v) => v.comments.filter((c) => isPainCandidate(c.text)).map((c) => ({ ...c, rank: v.rank })))
+    .flatMap((v) => v.comments.filter((c) => isPainCandidate(c.text)).map((c) => ({ ...c, video: `[${v.title.replace(/[|\[\]]/g, ' ')}](${v.url})` })))
     .sort((a, b) => b.likes - a.likes);
   p('## 悩み・質問の候補（全動画、いいね順）');
   p();
@@ -101,13 +101,13 @@ export function renderPainDigest(query: string, videos: PainVideo[], fetchedAt =
   p();
   if (!cand.length) p('（候補なし）');
   else {
-    p('| いいね | コメント | 動画 |');
+    p('| いいね | コメント | 書かれていた動画 |');
     p('|--:|---|--:|');
-    for (const c of cand) p(`| ${c.likes} | ${c.text.replace(/\|/g, '｜').slice(0, 200)} | ${c.rank} |`);
+    for (const c of cand) p(`| ${c.likes} | ${c.text.replace(/\|/g, '｜').slice(0, 200)} | ${c.video} |`);
   }
   p();
   const complaints = videos
-    .flatMap((v) => v.comments.filter((c) => isComplaint(c.text)).map((c) => ({ ...c, rank: v.rank })))
+    .flatMap((v) => v.comments.filter((c) => isComplaint(c.text)).map((c) => ({ ...c, video: `[${v.title.replace(/[|\[\]]/g, ' ')}](${v.url})` })))
     .sort((a, b) => b.likes - a.likes);
   p('## 不満・物足りなさ・要望の候補（全動画、いいね順）');
   p();
@@ -115,9 +115,9 @@ export function renderPainDigest(query: string, videos: PainVideo[], fetchedAt =
   p();
   if (!complaints.length) p('（候補なし）');
   else {
-    p('| いいね | コメント | 動画 |');
+    p('| いいね | コメント | 書かれていた動画 |');
     p('|--:|---|--:|');
-    for (const c of complaints) p(`| ${c.likes} | ${c.text.replace(/\|/g, '｜').slice(0, 200)} | ${c.rank} |`);
+    for (const c of complaints) p(`| ${c.likes} | ${c.text.replace(/\|/g, '｜').slice(0, 200)} | ${c.video} |`);
   }
   return L.join('\n') + '\n';
 }
