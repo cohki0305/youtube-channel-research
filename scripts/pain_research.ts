@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // 検索語の上位動画から、視聴者の悩みを読むための材料（チャプター・冒頭の発言・コメント）を集める
 // 使い方: node scripts/pain_research.ts "<検索語>" [--top 10] [--full 5] [--comments 100] [--opening 60] [--no-transcript]
-//   --full の本数（既定5）は、文字起こしの全文を data/_pains/<検索語>/ に保存する。悩みに応えているかは全文で判断する
+//   --full の本数（既定5）は、文字起こしの全文を data/_pains/<検索語>/ に保存する（ショートは除く）。悩みに応えているかは全文で判断する
 //   先に node scripts/search_compare.ts "<検索語>" で検索結果（関連度順）を取っておく
 // 出力: data/_pains/<検索語>.md と .json。悩みを型に分けるのは Claude（スキルのパートC・C5）
 // クォータ: 動画の詳細 1ユニット + コメント 1本あたり1ユニット。文字起こしは非公式の通信（--top は20本まで）
@@ -12,7 +12,7 @@ import * as transcriptLib from 'youtube-transcript-plus';
 import { ROOT, requireApiKey, slug, yt, quotaUsed } from './lib.ts';
 import { argValue, CONFIRM_OVER } from './own/targets.ts';
 import { fromLibrary, parseChapters } from './own/transcript.ts';
-import { cleanComment, formatTranscript, renderPainDigest, type PainComment, type PainVideo } from './research/pains.ts';
+import { cleanComment, formatTranscript, pickFullRead, renderPainDigest, type PainComment, type PainVideo } from './research/pains.ts';
 
 const { fetchTranscript } = transcriptLib;
 
@@ -39,6 +39,7 @@ if (!fs.existsSync(searchPath)) {
 const search = JSON.parse(fs.readFileSync(searchPath, 'utf8')) as { order: string; rows: SearchRow[] };
 if (search.order !== 'relevance') console.error('⚠ 検索結果が関連度順ではありません。悩みを読むには関連度順（既定）で取り直すのがよい');
 const rows = search.rows.slice(0, top);
+const fullRanks = pickFullRead(rows, fullN); // ショートを除いて上から fullN 本の全文を保存
 const key = requireApiKey();
 
 // 概要欄（チャプター）
@@ -64,7 +65,7 @@ for (const r of rows) {
     try {
       const segs = fromLibrary(await fetchTranscript(r.videoId, { lang: 'ja' }));
       opening = segs.filter((s) => s.start < openingSec).map((s) => s.text).join(' ') || null;
-      if (r.rank <= fullN && segs.length) {
+      if (fullRanks.has(r.rank) && segs.length) {
         fs.mkdirSync(fullDir, { recursive: true });
         const file = path.join(fullDir, `${r.rank}_${r.videoId}.txt`);
         fs.writeFileSync(file, `# ${r.rank}. ${r.title}\n# https://www.youtube.com/watch?v=${r.videoId}\n\n` + formatTranscript(segs));

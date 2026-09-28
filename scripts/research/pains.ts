@@ -22,6 +22,11 @@ export interface PainVideo {
   transcriptPath?: string | null; // 全文（上位の数本だけ保存）
 }
 
+// 全文を読む動画の順位。ショート（minMin 分未満）は除いて、上から n 本
+export function pickFullRead(rows: { rank: number; durationMin: number }[], n: number, minMin = 3): Set<number> {
+  return new Set(rows.filter((r) => r.durationMin >= minMin).slice(0, n).map((r) => r.rank));
+}
+
 // 文字起こしの全文を、every 秒ごとに時刻を入れたテキストにする（Claude が全文を読むため）
 export function formatTranscript(segs: Segment[], every = 30): string {
   const out: string[] = [];

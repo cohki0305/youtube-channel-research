@@ -78,3 +78,10 @@ test('renderPainDigest: 候補の表では、動画を番号ではなくタイ�
   const sec = md.slice(md.indexOf('## 不満・物足りなさ・要望の候補'));
   assert.match(sec, /\| 1 \| 実例が欲しい \| \[動画2\]\(https:\/\/www\.youtube\.com\/watch\?v=v2\) \|/);
 });
+
+test('pickFullRead: 全文を読む動画は、ショート（3分未満）を除いて上から n 本', async () => {
+  const { pickFullRead } = await import('../scripts/research/pains.ts');
+  const rows = [{ rank: 1, durationMin: 0 }, { rank: 2, durationMin: 20 }, { rank: 3, durationMin: 1 }, { rank: 4, durationMin: 15 }, { rank: 5, durationMin: 3 }];
+  assert.deepEqual([...pickFullRead(rows, 2)], [2, 4]);
+  assert.deepEqual([...pickFullRead(rows, 5)], [2, 4, 5]);
+});
