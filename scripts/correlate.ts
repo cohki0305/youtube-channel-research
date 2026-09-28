@@ -1,37 +1,39 @@
 #!/usr/bin/env node
 // 動画の再生数と、題材語の月間検索数（ラッコ）の相関を、題材語の「種類」ごとに出す
-// 使い方: node scripts/correlate.mjs data/<slug> [--since YYYY-MM] [--until YYYY-MM]
+// 使い方: node scripts/correlate.ts data/<slug> [--since YYYY-MM] [--until YYYY-MM]
 // 入力:
 //   data/<slug>/keywords.csv  … 列: video_id,keyword,type
 //       type は題材語の種類（例: 銘柄名 / 用語 / 時事 / 人名 / 制度）。
 //       種類が違う語を1つの相関に混ぜると、逆向きの効果が打ち消し合って結論を誤る。
 //       type 列がない行は、「◯◯ 株価」なら「銘柄名」、それ以外は「未分類」とみなす
-//   data/<slug>/volumes.csv   … 列: keyword,search_volume[,yoy]（rakko_cache.mjs volumes で作る）
+//   data/<slug>/volumes.csv   … 列: keyword,search_volume[,yoy]（rakko_cache.ts volumes で作る）
 // 出力: data/<slug>/correlation.md
 import fs from 'node:fs';
 import path from 'node:path';
-import { ROOT, parseCsv, spearman, median, fmt } from './lib.mjs';
+import { ROOT, parseCsv, spearman, median, fmt, type Video } from './lib.ts';
+
+interface Row { title: string; views: number; publishedAt: string; keyword: string; type: string; volume: number }
 
 const dirArg = process.argv[2];
 if (!dirArg) {
-  console.error('使い方: node scripts/correlate.mjs data/<slug> [--since YYYY-MM] [--until YYYY-MM]');
+  console.error('使い方: node scripts/correlate.ts data/<slug> [--since YYYY-MM] [--until YYYY-MM]');
   process.exit(1);
 }
-const opt = (name) => {
+const opt = (name: string): string | null => {
   const i = process.argv.indexOf(name);
-  return i > 0 ? process.argv[i + 1] : null;
+  return i > 0 ? process.argv[i + 1] ?? null : null;
 };
 const since = opt('--since');
 const until = opt('--until');
 const dir = path.resolve(ROOT, dirArg);
-const videos = JSON.parse(fs.readFileSync(path.join(dir, 'videos.json'), 'utf8'));
+const videos: Video[] = JSON.parse(fs.readFileSync(path.join(dir, 'videos.json'), 'utf8'));
 const byId = Object.fromEntries(videos.map((v) => [v.id, v]));
 const kw = parseCsv(fs.readFileSync(path.join(dir, 'keywords.csv'), 'utf8'));
 const vol = Object.fromEntries(parseCsv(fs.readFileSync(path.join(dir, 'volumes.csv'), 'utf8')).map((r) => [r.keyword.trim(), r]));
 
 const excludeDays = 7;
-const rows = [];
-const missing = [];
+const rows: Row[] = [];
+const missing: string[] = [];
 let untyped = 0;
 for (const r of kw) {
   const v = byId[r.video_id?.trim()];
@@ -55,17 +57,17 @@ if (rows.length < 5) {
   process.exit(1);
 }
 
-const months = (a) => {
+const months = (a: Row[]): string => {
   const m = a.map((r) => r.publishedAt.slice(0, 7)).sort();
   return `${m[0]}〜${m.at(-1)}`;
 };
-const spanMonths = (a) => {
+const spanMonths = (a: Row[]): number => {
   const m = a.map((r) => r.publishedAt.slice(0, 7)).sort();
   const [y1, m1] = m[0].split('-').map(Number);
-  const [y2, m2] = m.at(-1).split('-').map(Number);
+  const [y2, m2] = m.at(-1)!.split('-').map(Number);
   return (y2 - y1) * 12 + (m2 - m1) + 1;
 };
-const corrLine = (a) => {
+const corrLine = (a: Row[]): { text: string; rho: number | null } => {
   if (a.length < 8) return { text: `n=${a.length}（8本未満のため相関は出さない）`, rho: null };
   const { rho, n, p } = spearman(a.map((r) => r.views), a.map((r) => r.volume));
   const ptxt = p == null ? '' : `、p ≈ ${p < 0.0001 ? '<0.0001' : p.toFixed(4)}`;
@@ -75,7 +77,7 @@ const corrLine = (a) => {
 const types = [...new Set(rows.map((r) => r.type))];
 const byType = Object.fromEntries(types.map((t) => [t, rows.filter((r) => r.type === t)]));
 
-const L = [];
+const L: string[] = [];
 const o = (s = '') => L.push(s);
 o('# 再生数 × 検索数の相関（題材語の種類ごと）');
 o();
@@ -95,7 +97,7 @@ for (const t of types.sort((a, b) => byType[b].length - byType[a].length)) {
 o();
 const all = corrLine(rows);
 if (types.length > 1) {
-  const signs = types.map((t) => corrLine(byType[t]).rho).filter((x) => x != null);
+  const signs = types.map((t) => corrLine(byType[t]).rho).filter((x): x is number => x != null);
   const mixedSign = signs.some((x) => x > 0.2) && signs.some((x) => x < -0.2);
   o(`全種類をまとめた相関（参考）: ${all.text}`);
   o();
@@ -109,7 +111,7 @@ for (const t of types) {
   const a = byType[t];
   const vols = a.map((r) => r.volume).sort((x, y) => x - y);
   if (a.length < 8) continue;
-  const q = (f) => vols[Math.min(vols.length - 1, Math.floor(f * vols.length))];
+  const q = (f: number): number => vols[Math.min(vols.length - 1, Math.floor(f * vols.length))];
   const cuts = [q(0.25), q(0.5), q(0.75)];
   const tiers = [[0, cuts[0]], [cuts[0], cuts[1]], [cuts[1], cuts[2]], [cuts[2], Infinity]];
   o(`## ${t}：検索数の区分ごとの再生数`);

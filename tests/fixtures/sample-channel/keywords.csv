@@ -1,0 +1,9 @@
+video_id,keyword,type
+vid00xxxxxx,トヨタ 株価,銘柄名
+vid03xxxxxx,ソニー 株価,銘柄名
+vid06xxxxxx,任天堂 株価,銘柄名
+vid09xxxxxx,キーエンス 株価,銘柄名
+vid01xxxxxx,PER,用語
+vid04xxxxxx,配当性向,用語
+vid07xxxxxx,ROE,用語
+vid02xxxxxx,日経平均,時事

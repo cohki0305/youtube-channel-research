@@ -1,0 +1,13 @@
+{
+  "id": "UCxxxxxxxxxxxxxxxxxxxxxx",
+  "handle": "@sample",
+  "title": "サンプルチャンネル",
+  "description": "テスト用",
+  "publishedAt": "2025-01-01T00:00:00Z",
+  "country": "JP",
+  "subscriberCount": 12000,
+  "viewCount": 500000,
+  "videoCount": 12,
+  "keywords": "株",
+  "fetchedAt": "2026-09-28T00:00:00.000Z"
+}

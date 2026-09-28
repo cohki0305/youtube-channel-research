@@ -4,3 +4,6 @@ node_modules/
 .DS_Store
 skills/youtube-channel-research/archive/
 .claude/
+
+# チャンネル固有の実例・メモ（公開しない）
+*.local.md

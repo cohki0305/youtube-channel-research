@@ -1,30 +1,30 @@
 #!/usr/bin/env node
 // 取得済みデータを集計して summary.md を出力する（APIは使わない）
-// 使い方: node scripts/analyze_channel.mjs data/<slug> [--exclude-days 7]
+// 使い方: node scripts/analyze_channel.ts data/<slug> [--exclude-days 7]
 import fs from 'node:fs';
 import path from 'node:path';
-import { ROOT, median, fmt } from './lib.mjs';
+import { ROOT, median, fmt, type Channel, type Video } from './lib.ts';
 
 const dirArg = process.argv[2];
 if (!dirArg) {
-  console.error('使い方: node scripts/analyze_channel.mjs data/<slug> [--exclude-days 7]');
+  console.error('使い方: node scripts/analyze_channel.ts data/<slug> [--exclude-days 7]');
   process.exit(1);
 }
 const exIdx = process.argv.indexOf('--exclude-days');
 const excludeDays = exIdx > 0 ? +process.argv[exIdx + 1] : 7;
 const dir = path.resolve(ROOT, dirArg);
-const channel = JSON.parse(fs.readFileSync(path.join(dir, 'channel.json'), 'utf8'));
-const all = JSON.parse(fs.readFileSync(path.join(dir, 'videos.json'), 'utf8'));
+const channel: Channel = JSON.parse(fs.readFileSync(path.join(dir, 'channel.json'), 'utf8'));
+const all: Video[] = JSON.parse(fs.readFileSync(path.join(dir, 'videos.json'), 'utf8'));
 
 const now = Date.now();
-const ageDays = (v) => (now - Date.parse(v.publishedAt)) / 86400000;
+const ageDays = (v: Video): number => (now - Date.parse(v.publishedAt)) / 86400000;
 const longs = all.filter((v) => !v.isShortLikely && !v.isLive);
 const shorts = all.filter((v) => v.isShortLikely);
 const lives = all.filter((v) => v.isLive);
 // 再生数の比較は、投稿直後で伸び切っていない動画を除く
 const mature = longs.filter((v) => ageDays(v) >= excludeDays);
-const views = (a) => a.map((v) => v.views);
-const L = [];
+const views = (a: Video[]): number[] => a.map((v) => v.views);
+const L: string[] = [];
 const p = (s = '') => L.push(s);
 
 p(`# ${channel.title} 分析サマリー`);
@@ -41,7 +41,7 @@ if (shorts.length) p(`- ショートの再生数中央値: ${fmt(median(views(sh
 p();
 
 // 概要欄のリンク（送客先の把握用）
-const links = {};
+const links: Record<string, number> = {};
 for (const v of all) for (const u of v.description.match(/https?:\/\/[^\s)）」]+/g) || []) {
   const host = u.replace(/^https?:\/\//, '').split('/')[0];
   links[host] = (links[host] || 0) + 1;
@@ -57,7 +57,7 @@ p('## 月別（通常動画）');
 p();
 p('| 月 | 本数 | 再生数中央値 | 最大 |');
 p('|---|---|---|---|');
-const byMonth = {};
+const byMonth: Record<string, number[]> = {};
 for (const v of longs) (byMonth[v.publishedAt.slice(0, 7)] ||= []).push(v.views);
 for (const m of Object.keys(byMonth).sort()) p(`| ${m} | ${byMonth[m].length} | ${fmt(median(byMonth[m]))} | ${fmt(Math.max(...byMonth[m]))} |`);
 p();
@@ -66,7 +66,7 @@ p('## 尺ごと（通常動画）');
 p();
 p('| 尺 | 本数 | 再生数中央値 |');
 p('|---|---|---|');
-const buckets = [[0, 600, '10分未満'], [600, 1200, '10〜20分'], [1200, 1800, '20〜30分'], [1800, 3600, '30〜60分'], [3600, 1e9, '60分以上']];
+const buckets: [number, number, string][] = [[0, 600, '10分未満'], [600, 1200, '10〜20分'], [1200, 1800, '20〜30分'], [1800, 3600, '30〜60分'], [3600, 1e9, '60分以上']];
 for (const [lo, hi, label] of buckets) {
   const a = mature.filter((v) => v.durationSec >= lo && v.durationSec < hi);
   if (a.length) p(`| ${label} | ${a.length} | ${fmt(median(views(a)))} |`);
@@ -76,20 +76,20 @@ p();
 p('## 曜日・投稿時刻（JST、通常動画）');
 p();
 const dow = ['日', '月', '火', '水', '木', '金', '土'];
-const byDow = {};
-const byHour = {};
+const byDow: Record<number, number[]> = {};
+const byHour: Record<number, number[]> = {};
 for (const v of mature) {
   const d = new Date(Date.parse(v.publishedAt) + 9 * 3600000);
   (byDow[d.getUTCDay()] ||= []).push(v.views);
   (byHour[d.getUTCHours()] ||= []).push(v.views);
 }
-p('曜日: ' + Object.keys(byDow).sort().map((k) => `${dow[k]} ${byDow[k].length}本/${fmt(median(byDow[k]))}`).join('、'));
+p('曜日: ' + Object.keys(byDow).sort().map((k) => `${dow[+k]} ${byDow[+k].length}本/${fmt(median(byDow[+k]))}`).join('、'));
 p();
-p('時刻: ' + Object.keys(byHour).sort((a, b) => a - b).map((k) => `${k}時 ${byHour[k].length}本`).join('、'));
+p('時刻: ' + Object.keys(byHour).sort((a, b) => +a - +b).map((k) => `${k}時 ${byHour[+k].length}本`).join('、'));
 p();
 
 const sorted = [...mature].sort((a, b) => b.views - a.views);
-const line = (v) => `| ${fmt(v.views)} | ${v.publishedAt.slice(0, 10)} | ${Math.round(v.durationSec / 60)}分 | ${v.title.replace(/\|/g, '｜')} |`;
+const line = (v: Video): string => `| ${fmt(v.views)} | ${v.publishedAt.slice(0, 10)} | ${Math.round(v.durationSec / 60)}分 | ${v.title.replace(/\|/g, '｜')} |`;
 p('## 再生数 上位36本');
 p();
 p('| 再生 | 投稿日 | 尺 | タイトル |');
@@ -107,7 +107,7 @@ p('## タグ（4本以上で使われたもの、本数順）');
 p();
 p('チャンネル名や出演者名のタグは除外して読むこと。');
 p();
-const tagMap = {};
+const tagMap: Record<string, number[]> = {};
 for (const v of mature) for (const t of new Set(v.tags)) (tagMap[t] ||= []).push(v.views);
 p('| タグ | 本数 | 再生数中央値 |');
 p('|---|---|---|');
@@ -116,19 +116,19 @@ p();
 
 p('## タイトル先頭の【】（題材ラベル）');
 p();
-const bracket = {};
+const bracket: Record<string, number[]> = {};
 for (const v of mature) {
   const m = v.title.match(/^【([^】]+)】/);
   if (m) (bracket[m[1]] ||= []).push(v.views);
 }
-const bracketRows = Object.entries(bracket).sort((a, b) => median(b[1]) - median(a[1]));
+const bracketRows = Object.entries(bracket).sort((a, b) => (median(b[1]) ?? 0) - (median(a[1]) ?? 0));
 p(`【】で始まるタイトル: ${bracketRows.reduce((s, [, a]) => s + a.length, 0)} / ${mature.length} 本`);
 p();
 p('| 【】の中身 | 本数 | 再生数中央値 |');
 p('|---|---|---|');
 for (const [k, a] of bracketRows.slice(0, 40)) p(`| ${k} | ${a.length} | ${fmt(median(a))} |`);
 p();
-p('> 次の手順: 上位・下位の題材から「題材語 → ラッコで検索数を取る語」を作り、keywords.csv（video_id,keyword）にまとめて correlate.mjs を実行する。');
+p('> 次の手順: 上位・下位の題材から「題材語 → ラッコで検索数を取る語」を作り、keywords.csv（video_id,keyword）にまとめて correlate.ts を実行する。');
 
 const out = path.join(dir, 'summary.md');
 fs.writeFileSync(out, L.join('\n') + '\n');

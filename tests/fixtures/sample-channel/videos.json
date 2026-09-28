@@ -1,0 +1,218 @@
+[
+  {
+    "id": "vid08xxxxxx",
+    "url": "https://www.youtube.com/watch?v=vid08xxxxxx",
+    "publishedAt": "2026-09-09T09:00:00.000Z",
+    "title": "【速報】利下げの影響",
+    "views": 27000,
+    "likes": 80,
+    "comments": 8,
+    "durationSec": 840,
+    "isShortLikely": false,
+    "isLive": false,
+    "tags": [
+      "株",
+      "投資"
+    ],
+    "categoryId": "27",
+    "description": "0:00 はじめに\n1:30 本題\nhttps://example.com"
+  },
+  {
+    "id": "vid07xxxxxx",
+    "url": "https://www.youtube.com/watch?v=vid07xxxxxx",
+    "publishedAt": "2026-08-08T09:00:00.000Z",
+    "title": "【用語】ROEの本質",
+    "views": 16000,
+    "likes": 70,
+    "comments": 7,
+    "durationSec": 810,
+    "isShortLikely": false,
+    "isLive": false,
+    "tags": [
+      "株",
+      "投資"
+    ],
+    "categoryId": "27",
+    "description": "0:00 はじめに\n1:30 本題\nhttps://example.com"
+  },
+  {
+    "id": "vid06xxxxxx",
+    "url": "https://www.youtube.com/watch?v=vid06xxxxxx",
+    "publishedAt": "2026-07-07T09:00:00.000Z",
+    "title": "【決算】任天堂の決算",
+    "views": 7000,
+    "likes": 60,
+    "comments": 6,
+    "durationSec": 780,
+    "isShortLikely": false,
+    "isLive": false,
+    "tags": [
+      "株",
+      "投資"
+    ],
+    "categoryId": "27",
+    "description": "0:00 はじめに\n1:30 本題\nhttps://example.com"
+  },
+  {
+    "id": "vid05xxxxxx",
+    "url": "https://www.youtube.com/watch?v=vid05xxxxxx",
+    "publishedAt": "2026-06-06T09:00:00.000Z",
+    "title": "【速報】円安が加速",
+    "views": 18000,
+    "likes": 50,
+    "comments": 5,
+    "durationSec": 750,
+    "isShortLikely": false,
+    "isLive": false,
+    "tags": [
+      "株",
+      "投資"
+    ],
+    "categoryId": "27",
+    "description": "0:00 はじめに\n1:30 本題\nhttps://example.com"
+  },
+  {
+    "id": "vid04xxxxxx",
+    "url": "https://www.youtube.com/watch?v=vid04xxxxxx",
+    "publishedAt": "2026-05-05T09:00:00.000Z",
+    "title": "【用語】配当性向の違い",
+    "views": 10000,
+    "likes": 40,
+    "comments": 4,
+    "durationSec": 720,
+    "isShortLikely": false,
+    "isLive": false,
+    "tags": [
+      "株",
+      "投資"
+    ],
+    "categoryId": "27",
+    "description": "0:00 はじめに\n1:30 本題\nhttps://example.com"
+  },
+  {
+    "id": "vid03xxxxxx",
+    "url": "https://www.youtube.com/watch?v=vid03xxxxxx",
+    "publishedAt": "2026-04-04T09:00:00.000Z",
+    "title": "【決算】ソニーの決算",
+    "views": 4000,
+    "likes": 30,
+    "comments": 3,
+    "durationSec": 690,
+    "isShortLikely": false,
+    "isLive": false,
+    "tags": [
+      "株",
+      "投資"
+    ],
+    "categoryId": "27",
+    "description": "0:00 はじめに\n1:30 本題\nhttps://example.com"
+  },
+  {
+    "id": "vid11xxxxxx",
+    "url": "https://www.youtube.com/watch?v=vid11xxxxxx",
+    "publishedAt": "2026-03-12T09:00:00.000Z",
+    "title": "ライブ：質問に答える",
+    "views": 36000,
+    "likes": 110,
+    "comments": 11,
+    "durationSec": 930,
+    "isShortLikely": false,
+    "isLive": true,
+    "tags": [
+      "株",
+      "投資"
+    ],
+    "categoryId": "27",
+    "description": "0:00 はじめに\n1:30 本題\nhttps://example.com"
+  },
+  {
+    "id": "vid02xxxxxx",
+    "url": "https://www.youtube.com/watch?v=vid02xxxxxx",
+    "publishedAt": "2026-03-03T09:00:00.000Z",
+    "title": "【速報】日経平均が急落",
+    "views": 9000,
+    "likes": 20,
+    "comments": 2,
+    "durationSec": 660,
+    "isShortLikely": false,
+    "isLive": false,
+    "tags": [
+      "株",
+      "投資"
+    ],
+    "categoryId": "27",
+    "description": "0:00 はじめに\n1:30 本題\nhttps://example.com"
+  },
+  {
+    "id": "vid10xxxxxx",
+    "url": "https://www.youtube.com/watch?v=vid10xxxxxx",
+    "publishedAt": "2026-02-11T09:00:00.000Z",
+    "title": "ショート：PER",
+    "views": 22000,
+    "likes": 100,
+    "comments": 10,
+    "durationSec": 45,
+    "isShortLikely": true,
+    "isLive": false,
+    "tags": [
+      "株",
+      "投資"
+    ],
+    "categoryId": "27",
+    "description": "0:00 はじめに\n1:30 本題\nhttps://example.com"
+  },
+  {
+    "id": "vid01xxxxxx",
+    "url": "https://www.youtube.com/watch?v=vid01xxxxxx",
+    "publishedAt": "2026-02-02T09:00:00.000Z",
+    "title": "【用語】PERとは何か",
+    "views": 4000,
+    "likes": 10,
+    "comments": 1,
+    "durationSec": 630,
+    "isShortLikely": false,
+    "isLive": false,
+    "tags": [
+      "株",
+      "投資"
+    ],
+    "categoryId": "27",
+    "description": "0:00 はじめに\n1:30 本題\nhttps://example.com"
+  },
+  {
+    "id": "vid09xxxxxx",
+    "url": "https://www.youtube.com/watch?v=vid09xxxxxx",
+    "publishedAt": "2026-01-10T09:00:00.000Z",
+    "title": "【決算】キーエンスの決算",
+    "views": 10000,
+    "likes": 90,
+    "comments": 9,
+    "durationSec": 870,
+    "isShortLikely": false,
+    "isLive": false,
+    "tags": [
+      "株",
+      "投資"
+    ],
+    "categoryId": "27",
+    "description": "0:00 はじめに\n1:30 本題\nhttps://example.com"
+  },
+  {
+    "id": "vid00xxxxxx",
+    "url": "https://www.youtube.com/watch?v=vid00xxxxxx",
+    "publishedAt": "2026-01-01T09:00:00.000Z",
+    "title": "【決算】トヨタの決算を解説",
+    "views": 1000,
+    "likes": 0,
+    "comments": 0,
+    "durationSec": 600,
+    "isShortLikely": false,
+    "isLive": false,
+    "tags": [
+      "株",
+      "投資"
+    ],
+    "categoryId": "27",
+    "description": "0:00 はじめに\n1:30 本題\nhttps://example.com"
+  }
+]
