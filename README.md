@@ -56,6 +56,7 @@
 | `node scripts/fetch_own_analytics.ts data/<slug> [--video ID] [--since YYYY-MM]` | 動画ごとに、種類・公開後28日の日ごとの数字・維持率の曲線・流入元（検索語・関連動画）を取る | 0（Analytics API） |
 | `node scripts/import_studio.ts data/<slug>` | Studio の CSV（`own/studio/{all,new,returning}/`）を取り込む | 0 |
 | `node scripts/fetch_transcript.ts data/<slug> [--video ID \| --ids a,b] [--yes]` | 文字起こしを取る（自分・ベンチマークどちらの動画でも）。20本を超えるときは `--yes` が必要 | 0（非公式の通信） |
+| `node scripts/pain_research.ts "検索語" [--top 10] [--no-transcript]` | 検索結果の上位動画のチャプター・冒頭の発言・コメントを集め、悩みの候補と不満・要望の候補を `data/_pains/<語>.md` に出す（先に `search_compare.ts` を関連度順で実行） | 約11ユニット＋文字起こし |
 | `node scripts/own_keywords.ts data/<slug> [--top 45]` | 自分の動画の YouTube検索語（Analytics API）を `keywords.csv` に書き出す（ラッコで検索数を取るため）。手で足した「題材語」の行は残す | 0 |
 | `node scripts/analyze_own.ts data/<slug> [--video ID]` | 全動画の `own/report.md`、または1本の `own/videos/<ID>.md` を出す | 0 |
 | `npm test` / `npm run typecheck` | テストと型の確認 | 0 |
